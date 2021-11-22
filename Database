@@ -1,0 +1,134 @@
+create database RevaTravel
+
+use RevaTravel  
+create table Orders (
+    OrderID int not null,
+    clientID int not null,
+	voucherID int not null,
+    ClientName nvarchar(40) not null,
+    orderSum int not null,
+    orderDate date not null,
+    salesManager int not null,
+    additionalService int,
+    
+    constraint orderID primary key (orderID)
+    );
+     
+create table additionalServices (
+    serviceID int, 
+    serviceName nvarchar(40),
+    servicePrice money, 
+    serviceProvider nvarchar (40),
+    
+    constraint serviceID primary key (serviceID)
+);
+
+alter table Orders
+add constraint FK_serviceID foreign key(additionalService) references additionalServices(serviceID);
+
+create table Clients (
+    clientID int,
+    clientName nvarchar(40),
+    clientBirthdate date, 
+    passportNumber nvarchar(40),
+    clientAddress nvarchar(40),
+    CphoneNumber nvarchar(13)
+    
+    constraint clientID primary key (clientID)
+);
+
+alter table Orders
+add constraint FK_clientID foreign key (clientID) references Clients(clientID);
+
+create table Employees (
+    employeeID int not null,
+    employeeName nvarchar(40) not null,
+    EphoneNumber nvarchar(13) not null,
+    employeePosition nvarchar(40) not null,
+    wageperOrder money,
+    employeeAddress nvarchar(40) not null,
+
+    constraint employeeID primary key (employeeID)
+
+);
+
+alter table Orders
+add constraint FK_salesManager foreign key (salesManager) references Employees(employeeID);
+
+create table Billing (
+    orderID int not null,
+    paymentStatus nvarchar(40) not null,
+    paymentDate date not null,
+    notes nvarchar(40),
+
+    constraint PK_billingOrderID primary key (orderID)
+
+);
+
+alter table Orders
+add constraint FK_OrderID foreign key (OrderID) references Billing(OrderID);
+
+create table Vouchers (
+    voucherID int not null,
+    tourID int not null, 
+    peopleAmount int not null,
+    comingDate date not null,
+    leavingDate date not null
+
+    constraint PK_vouchedID primary key (voucherID)
+    )
+alter table Vouchers add transporterID int not null;
+alter table Orders
+add constraint FK_voucherID foreign key (voucherID) references Vouchers(voucherID);
+
+
+create table Tours (
+    tourID int not null, 
+    Country nvarchar(40) not null,  
+    City nvarchar(40) not null, 
+    Hotel nvarchar(40) not null, 
+
+    constraint PK_tourID primary key (tourID)
+
+)
+alter table Tours alter column City int not null
+
+alter table Vouchers
+add constraint FK_tourID foreign key (tourID) references Tours(tourID);
+
+create table Cities (
+    countryID int not null, 
+    cityID int not null, 
+    cityName nvarchar(40) not null, 
+
+    constraint PK_cityID primary key (cityID)
+
+);
+
+alter table Tours
+add constraint FK_City foreign key (City) references Cities(cityID);
+
+create table Countries (
+    countryID int not null, 
+    countryName nvarchar(40) not null, 
+    visaNecessity nvarchar(40) not null, 
+    notes nvarchar(40) not null, 
+
+    constraint PK_countryID primary key (countryID)
+
+);
+
+alter table Cities
+add constraint FK_countryID foreign key (countryID) references Countries(countryID);
+
+create table Transporters (
+    transporterID int not null, 
+    transporterName nvarchar not null, 
+    fee money not null
+
+    constraint PK_transporterID primary key (transporterID)
+
+)
+
+alter table Vouchers
+add constraint FK_transporterID foreign key (transporterID) references Transporters(transporterID);
